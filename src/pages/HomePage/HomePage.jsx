@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import AdvancedTable from "../../components/AdvancedTable/AdvancedTable";
-import { getRequest } from "../../utils/apiCall";
+import { deleteRequest, getRequest } from "../../utils/apiCall";
+
+const USER_URL = "users";
 
 export default function HomePage() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleDeleteUser = async (id, event) => {
+    event.stopPropagation();
+
+    setData(data.filter((row) => row.id !== id));
+  };
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -20,21 +28,12 @@ export default function HomePage() {
       field: "actions",
       headerName: "Actions",
       // sortable: false,
-      renderCell: () => (
+      renderCell: (value, row) => (
         <div>
           <button
-            className="bg-yellow-300 text-black p-2 rounded"
-            onClick={(event) => handleEdit(params.id, event)}
-            style={{ marginRight: 8 }}
-          >
-            {/* <Edit /> */}
-            Edit
-          </button>
-          <button
             className="bg-red-700 text-white p-2 rounded"
-            onClick={(event) => handleDelete(params.id, event)}
+            onClick={(event) => handleDeleteUser(row.id, event)}
           >
-            {/* <Delete /> */}
             Delete
           </button>
         </div>
@@ -46,7 +45,7 @@ export default function HomePage() {
     setIsLoading(true);
 
     try {
-      const response = await getRequest("users");
+      const response = await getRequest(USER_URL);
       setData(response.data.data);
       setIsLoading(false);
     } catch (error) {

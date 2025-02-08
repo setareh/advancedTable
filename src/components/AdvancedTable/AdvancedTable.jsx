@@ -7,7 +7,7 @@ export default function AdvancedTable({ columns, data }) {
         <tr>
           {columns.map((column) => (
             <th
-              key={column.id}
+              key={column.field}
               className="border-b border-gray-200 p-4 pt-0 pb-3 pl-8 text-left font-semibold text-gray-900"
             >
               {column.headerName}
@@ -20,10 +20,9 @@ export default function AdvancedTable({ columns, data }) {
           <tr key={rowIndex}>
             {columns.map((column) => (
               <td
-                key={column.id}
+                key={column.field}
                 className="border-b border-gray-100 p-4 pl-8 text-gray-500"
               >
-                {/* {row[column.field]} */}
                 {column.renderCell
                   ? column.renderCell(row[column.field], row)
                   : row[column.field]}

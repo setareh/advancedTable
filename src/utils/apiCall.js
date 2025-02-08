@@ -43,3 +43,16 @@ export function postRequest(url, payload) {
       return Promise.reject(error);
     });
 }
+
+export function deleteRequest(url, config = {}) {
+  return api
+    .delete(`/${url}`, config)
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      if (error?.response?.status === 404) {
+      }
+      return Promise.reject(error);
+    });
+}
