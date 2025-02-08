@@ -7,9 +7,14 @@ export default function AdvancedTable({
   currentPage,
   itemsPerPage,
   onPageChange,
+  isApiPagination,
+  itemsPerPageOptions,
+  setItemsPerPage,
 }) {
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = isApiPagination
+    ? data
+    : data.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div>
@@ -27,7 +32,7 @@ export default function AdvancedTable({
           </tr>
         </thead>
         <tbody className="dark:bg-gray-800">
-          {data.map((row, rowIndex) => (
+          {currentData.map((row, rowIndex) => (
             <tr
               key={rowIndex}
               className={`${rowIndex % 2 == 0 ? "" : "bg-gray-50"}`}
@@ -46,12 +51,30 @@ export default function AdvancedTable({
           ))}
         </tbody>
       </table>
-      <Pagination
-        totalItems={data.length}
-        itemsPerPage={itemsPerPage}
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-      />
+      <div className="flex flex-row justify-between mt-2 items-center">
+        <Pagination
+          totalItems={data.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+          isApiPagination={isApiPagination}
+        />
+        {!isApiPagination && (
+          <label>
+            per page:{" "}
+            <select
+              onChange={(e) => setItemsPerPage(e)}
+              className="py-1 px-3 border-gray-400"
+            >
+              {itemsPerPageOptions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
 import AdvancedTable from "../../components/AdvancedTable/AdvancedTable";
-import { deleteRequest, getRequest } from "../../utils/apiCall";
+import { getRequest } from "../../utils/apiCall";
 
 const USER_URL = "users";
 
-export default function HomePage({ isApiPagination }) {
+export default function WithoutApi({ isApiPagination }) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 5;
+  // const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const itemsPerPageOptions = [5, 10, 20, 50];
 
   const handleDeleteUser = async (id, event) => {
     event.stopPropagation();
 
     setData(data.filter((row) => row.id !== id));
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
@@ -52,7 +59,7 @@ export default function HomePage({ isApiPagination }) {
     setIsLoading(true);
 
     try {
-      const response = await getRequest(`${USER_URL}?page=${page}`);
+      const response = await getRequest(`${USER_URL}?per_page=100`);
       setData(response.data.data);
       setIsLoading(false);
     } catch (error) {
@@ -77,8 +84,10 @@ export default function HomePage({ isApiPagination }) {
           data={data}
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
+          setItemsPerPage={handleItemsPerPageChange}
           onPageChange={handlePageChange}
           isApiPagination={isApiPagination}
+          itemsPerPageOptions={itemsPerPageOptions}
         />
       )}
     </div>
