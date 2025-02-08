@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Pagination from "../Pagination/Pagination";
 
 export default function AdvancedTable({
@@ -11,13 +11,35 @@ export default function AdvancedTable({
   itemsPerPageOptions,
   setItemsPerPage,
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = isApiPagination
     ? data
     : data.slice(startIndex, startIndex + itemsPerPage);
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = currentData.filter(
+    (row) =>
+      row.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
+      <div>
+        <label className="mr-2">Search:</label>
+        <input
+          className="shadow appearance-none border rounded py-2 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline mb-6"
+          type="search"
+          onChange={(e) => handleSearchChange(e)}
+          value={searchQuery}
+          placeholder="Search ..."
+        />
+      </div>
       <table className="w-full table-auto border-collapse text-sm overflow-x-auto">
         <thead>
           <tr>
@@ -32,7 +54,7 @@ export default function AdvancedTable({
           </tr>
         </thead>
         <tbody className="dark:bg-gray-800">
-          {currentData.map((row, rowIndex) => (
+          {filteredData.map((row, rowIndex) => (
             <tr
               key={rowIndex}
               className={`${rowIndex % 2 == 0 ? "" : "bg-gray-50"}`}
