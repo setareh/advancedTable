@@ -7,11 +7,18 @@ const USER_URL = "users";
 export default function HomePage() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 5;
 
   const handleDeleteUser = async (id, event) => {
     event.stopPropagation();
 
     setData(data.filter((row) => row.id !== id));
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const columns = [
@@ -31,7 +38,7 @@ export default function HomePage() {
       renderCell: (value, row) => (
         <div>
           <button
-            className="bg-red-700 text-white p-2 rounded"
+            className="bg-red-700 text-white p-2 rounded cursor-pointer"
             onClick={(event) => handleDeleteUser(row.id, event)}
           >
             Delete
@@ -41,11 +48,11 @@ export default function HomePage() {
     },
   ];
 
-  const getData = async () => {
+  const getData = async (page) => {
     setIsLoading(true);
 
     try {
-      const response = await getRequest(USER_URL);
+      const response = await getRequest(`${USER_URL}?page=${page}`);
       setData(response.data.data);
       setIsLoading(false);
     } catch (error) {
@@ -57,12 +64,22 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    getData(currentPage);
+  }, [currentPage]);
 
   return (
     <div className="block mx-auto w-6xl p-6">
-      <AdvancedTable columns={columns} data={data} />
+      {isLoading ? (
+        <p>Loading ... </p>
+      ) : (
+        <AdvancedTable
+          columns={columns}
+          data={data}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
